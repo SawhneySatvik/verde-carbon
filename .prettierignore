@@ -1,0 +1,11 @@
+node_modules
+.next
+coverage
+playwright-report
+test-results
+package-lock.json
+
+# Project scaffolding / design docs (not application source)
+.se
+design
+.claude

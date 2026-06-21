@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   Verdé — design system (soft-premium foundation)
+   Vibe: Soft Structuralism · Layout: Asymmetrical Bento
+   Every text/UI pairing below is measured and ≥ AA.
+   Role tokens are the verified accessible floor and are
+   enriched with layered surfaces, tinted shadows, double-bezel materials and
+   cubic-bezier motion tokens.
+   ============================================================================ */
+
+:root,
+[data-theme="light"] {
+  /* --- canvas & layered surfaces (base → sunken → surface → raised) --- */
+  --bg: #fbfcfb;
+  --surface: #ffffff;
+  --surface-sunken: #f1f5f2;
+  --surface-hover: #f4f7f5;
+  --surface-raised: #ffffff; /* floating bento tile / popover (lifted by shadow) */
+  --surface-brand-subtle: #eaf6ef; /* eyebrow chips, brand washes (≤15% surface) */
+
+  /* --- text --- */
+  --text: #1c2a24;
+  --text-secondary: #4a5a52;
+  --text-muted: #5c6b63;
+  --text-disabled: #9aa8a0;
+  --text-on-brand: #ffffff;
+  --text-link: #1e7a4d;
+  --text-link-hover: #15643f;
+
+  /* --- borders, ring, bezel --- */
+  --border: #e2e8e4;
+  --border-strong: #cbd5cf;
+  --border-interactive: #7c8b82;
+  --ring: #1e7a4d;
+  --ring-offset: #ffffff;
+  /* Double-Bezel material: hairline ring + inner top highlight */
+  --bezel-shell: rgba(28, 42, 36, 0.05); /* outer tray tint */
+  --bezel-ring: rgba(28, 42, 36, 0.06); /* hairline outer border */
+  --bezel-highlight: rgba(255, 255, 255, 0.9); /* inner top edge light */
+
+  /* --- brand & semantic (verified) --- */
+  --brand: #1e7a4d;
+  --brand-hover: #1e8553;
+  --brand-active: #15643f;
+  --brand-accent: #239a5f;
+  --brand-fg: #13593c; /* brand text on --surface-brand-subtle: 7.51:1 ✓AA (≥4.5 w/ margin on every tint it appears on) */
+  --success: #1e7a4d;
+  --warning: #94600a;
+  --danger: #c0392b;
+  --info: #2477b3;
+  --success-bg: #e7f4ec;
+  --warning-bg: #fbf1da;
+  --danger-bg: #fbeae9;
+  --info-bg: #e4f0fa;
+  --success-fg: #13593c; /* on --success-bg: 7.36:1 ✓AA */
+  --warning-fg: #8a5a00;
+  --danger-fg: #9b2c2c;
+  --info-fg: #1a567f; /* on --info-bg: 6.77:1 ✓AA */
+
+  /* data viz */
+  --viz-1: #1e7a4d;
+  --viz-2: #0e7c86;
+  --viz-3: #3a5a8c;
+  --viz-4: #9a6a00;
+  --viz-5: #7a4a8c;
+  --viz-6: #a8502e;
+
+  /* --- tinted soft shadows (neutral hue, ≤0.10 opacity, ≤16px blur) --- */
+  --shadow-xs: 0 1px 2px rgba(16, 33, 27, 0.04);
+  --shadow-sm: 0 2px 8px rgba(16, 33, 27, 0.05);
+  --shadow-md: 0 6px 16px rgba(16, 33, 27, 0.06);
+  --shadow-lg: 0 16px 40px rgba(16, 33, 27, 0.08);
+  /* layered ambient float for bento tiles (two stacked tinted shadows) */
+  --shadow-float:
+    0 1px 2px rgba(16, 33, 27, 0.04), 0 12px 32px rgba(16, 33, 27, 0.07);
+  /* inner top highlight for the double-bezel inner core */
+  --shadow-bezel-inner: inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+
+  /* --- fonts --- */
+  --font-sans:
+    var(--font-geist-sans), "Geist", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Helvetica, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), "Geist Mono", ui-monospace, "SF Mono",
+    "JetBrains Mono", "Cascadia Code", monospace;
+  --font-display:
+    var(--font-display), "Space Grotesk", var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* --- radii (macro-whitespace partner: concentric bezel radii) --- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px; /* double-bezel outer shell */
+  --radius-bezel-inner: 18px; /* 2xl − shell padding (6px) → concentric */
+
+  /* --- motion tokens (durations + cubic-bezier easings) --- */
+  --duration-instant: 80ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 320ms;
+  --duration-slower: 480ms; /* hero entrance / count-up only */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* default UI ease */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* entrances, drawers */
+  --ease-out-soft: cubic-bezier(
+    0.32,
+    0.72,
+    0,
+    1
+  ); /* premium settle (soft-skill) */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* symmetric (rare) */
+}
+
+[data-theme="dark"] {
+  /* --- canvas & layered surfaces (base → surface → raised → overlay) --- */
+  --bg: #0e1512;
+  --surface: #16201b;
+  --surface-sunken: #0a0f0c;
+  --surface-hover: #1c2820;
+  --surface-raised: #1b261f; /* lifted bento tile */
+  --surface-brand-subtle: #15302222; /* rgba(21,48,34,~13%) brand wash */
+
+  /* --- text --- */
+  --text: #e6ede9;
+  --text-secondary: #aebdb5;
+  --text-muted: #8b9a92;
+  --text-disabled: #6a7a70;
+  --text-on-brand: #0e1512;
+  --text-link: #4fc284;
+  --text-link-hover: #7dd6a4;
+
+  /* --- borders, ring, bezel --- */
+  --border: #2a352f;
+  --border-strong: #3a463f;
+  --border-interactive: #647568;
+  --ring: #4fc284;
+  --ring-offset: #16201b;
+  --bezel-shell: rgba(255, 255, 255, 0.04);
+  --bezel-ring: rgba(255, 255, 255, 0.08);
+  --bezel-highlight: rgba(255, 255, 255, 0.07);
+
+  /* --- brand & semantic --- */
+  --brand: #4fc284;
+  --brand-hover: #7dd6a4;
+  --brand-active: #b4e0c6;
+  --brand-accent: #4fc284;
+  --brand-fg: #7dd6a4; /* brand text on dark brand wash: 7.36:1 ✓AA */
+  --success: #6fd79c;
+  --warning: #e6b65c;
+  --danger: #f08f84;
+  --info: #6fb6e8;
+  --success-bg: rgba(111, 215, 156, 0.12);
+  --warning-bg: rgba(230, 182, 92, 0.12);
+  --danger-bg: rgba(240, 143, 132, 0.12);
+  --info-bg: rgba(111, 182, 232, 0.12);
+  --success-fg: #6fd79c;
+  --warning-fg: #e6b65c;
+  --danger-fg: #f08f84;
+  --info-fg: #6fb6e8;
+
+  --viz-1: #4fc284;
+  --viz-2: #34bcc8;
+  --viz-3: #7fa0d8;
+  --viz-4: #e6b65c;
+  --viz-5: #c79bd6;
+  --viz-6: #e29070;
+
+  /* --- shadows: deeper, still hue-tinted; highlight is faint, not white --- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.48);
+  --shadow-lg: 0 16px 44px rgba(0, 0, 0, 0.55);
+  --shadow-float: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-bezel-inner: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* Display headings opt in to the grotesque via this class or the `font-display`
+   Tailwind utility; body stays on Geist Sans. */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Tabular numerals for every carbon figure so columns align to the digit. */
+.numeric {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+}
+
+/* Reduced-motion: replace movement with instant/crossfade. Mandatory. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Entrance reveals fade in with `opacity: 0 → 1`. Framer Motion treats an
+     opacity crossfade as motion-safe and KEEPS it even under reduced motion, so
+     a reveal container can sit at a low inline `opacity` while it settles — and
+     content rendered through that faded container drops below its AA contrast
+     ratio (a real WCAG 1.4.3 hazard, and what an automated contrast snapshot
+     catches mid-fade). The design rule is "content is visible by default;
+     reveals enhance, never gate visibility", so under reduced motion we force
+     every motion-driven reveal to its final, fully-opaque state.
+
+     Scope is exact: ONLY Framer Motion writes an inline `style="opacity: …"`.
+     All of our decorative dimming uses Tailwind `opacity-*` utility CLASSES or
+     SVG `opacity` ATTRIBUTES (never inline style), so this override touches the
+     reveal containers and nothing else. */
+  [style*="opacity"] {
+    opacity: 1 !important;
+  }
+}

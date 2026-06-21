@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// Verdé Firestore security rules (ADR-004). Defense-in-depth: handlers already
+// resolve the uid from Auth server-side and firebase-admin bypasses these rules,
+// so these are the second wall — every user document is keyed by uid and access
+// is denied unless request.auth.uid == uid. Cross-uid reads/writes are denied.
+//
+// The `_batches/{key}` and `_merges/{key}` idempotency receipts and the
+// anon->sign-in MERGE are written exclusively by the server (firebase-admin /
+// rules-disabled context), so clients have no rule that grants them — they fall
+// through to the final deny.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+
+      match /activities/{activityId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /goals/{goalId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /streaks/{streakId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /baseline/{baselineId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /counters/{counterId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Anything not matched above (including the server-only `_batches` and
+    // `_merges` receipt subcollections) is denied to all clients.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": "1",
+  "description": "Recorded AiPort.coach Q&A fixtures for the conversational coach. Deterministic, network-free advice in dev + CI (ADR-002). The user `message` is matched after normalization (lowercased, trimmed, collapsed whitespace, surrounding/trailing punctuation stripped) against `match` + `aliases`. Every `reply` is grounded, encouraging, actionable canned advice and MUST be DIGIT-FREE — the AI never emits a number; the calculator (the route grounding) is the sole producer of every figure the UI shows. On a miss the adapter returns a sensible digit-free default. Re-record path: add an entry here keyed by the normalized question.",
+  "default": "A reliable next step is to focus on the choices that show up most in your log. Cutting back on the heaviest category a little at a time tends to add up, and small, repeatable swaps usually stick better than big one-off changes.",
+  "entries": [
+    {
+      "match": "how can i reduce my footprint",
+      "aliases": [
+        "how do i reduce my footprint",
+        "how can i lower my emissions",
+        "what is the biggest thing i can do",
+        "what is my biggest lever",
+        "where should i start"
+      ],
+      "reply": "Your transport choices tend to dominate, so swapping some car trips for transit, cycling, or walking is usually the biggest lever. Try replacing your most frequent short drives first and let the habit build from there."
+    },
+    {
+      "match": "what about my diet",
+      "aliases": [
+        "how can i eat greener",
+        "should i change my diet",
+        "what about food",
+        "how do i reduce diet emissions"
+      ],
+      "reply": "Diet is one of the easiest places to make steady progress. Swapping a few red-meat meals each week for chicken, fish, or plant-based options tends to lower your footprint without a big lifestyle change."
+    },
+    {
+      "match": "how do i save energy at home",
+      "aliases": [
+        "what about energy",
+        "how can i reduce energy use",
+        "how do i lower my electricity",
+        "tips for home energy"
+      ],
+      "reply": "At home, the steadiest wins come from heating and cooling. Nudging the thermostat, sealing drafts, and switching off idle devices all chip away at your energy use over time."
+    },
+    {
+      "match": "am i doing well",
+      "aliases": [
+        "how am i doing",
+        "is this good",
+        "am i making progress",
+        "how is my progress"
+      ],
+      "reply": "You are clearly paying attention, and that is the part that compounds. Keep logging consistently and focus your next change on the category that shows up most, since that is where your effort goes furthest."
+    }
+  ]
+}

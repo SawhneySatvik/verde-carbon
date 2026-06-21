@@ -1,0 +1,109 @@
+{
+  "version": "1",
+  "description": "Recorded AiPort.parseActivity fixtures for deterministic, network-free parse in dev + CI (ADR-002). Inputs are matched after normalization (lowercased, trimmed, collapsed whitespace, trailing punctuation stripped). Each `result` MUST satisfy the S2 aiParseResultSchema and carries NO emission number. Re-record path: see fixtures/README.md.",
+  "entries": [
+    {
+      "match": "drove 20 km",
+      "aliases": ["i drove 20 km", "drove 20km", "drove 20 kilometers"],
+      "result": {
+        "items": [
+          {
+            "activity": "drove",
+            "value": 20,
+            "unit": "km",
+            "candidateFactorKey": "transport.car.gasoline",
+            "confidence": 0.92
+          }
+        ]
+      }
+    },
+    {
+      "match": "had a beef burger",
+      "aliases": ["beef burger", "ate a beef burger", "had a beef meal"],
+      "result": {
+        "items": [
+          {
+            "activity": "beef burger",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.beef",
+            "confidence": 0.88
+          }
+        ]
+      }
+    },
+    {
+      "match": "drove 10 miles and had a chicken dinner",
+      "aliases": [
+        "drove 10 miles and had chicken",
+        "10 miles drive and a chicken meal"
+      ],
+      "result": {
+        "items": [
+          {
+            "activity": "drove",
+            "value": 10,
+            "unit": "mile",
+            "candidateFactorKey": "transport.car.gasoline",
+            "confidence": 0.9
+          },
+          {
+            "activity": "chicken dinner",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.chicken",
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    {
+      "match": "had a beef burger and a unicorn steak",
+      "aliases": [
+        "beef burger and unicorn steak",
+        "a beef meal and a unicorn steak"
+      ],
+      "result": {
+        "items": [
+          {
+            "activity": "beef burger",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.beef",
+            "confidence": 0.87
+          },
+          {
+            "activity": "unicorn steak",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.unknown",
+            "confidence": 0.21
+          }
+        ]
+      }
+    },
+    {
+      "match": "used 50 kwh of electricity",
+      "aliases": ["50 kwh electricity", "50 kwh of grid power"],
+      "result": {
+        "items": [
+          {
+            "activity": "electricity",
+            "value": 50,
+            "unit": "kWh",
+            "candidateFactorKey": "energy.electricity.grid",
+            "confidence": 0.9
+          }
+        ]
+      }
+    },
+    {
+      "match": "asdf",
+      "aliases": [],
+      "result": {
+        "items": [],
+        "clarification": "I couldn't identify an activity. Try something like \"drove 20 km\" or \"had a beef burger\"."
+      }
+    }
+  ]
+}

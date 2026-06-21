@@ -1,0 +1,166 @@
+{
+  "factorSet": "DEFRA_DESNZ",
+  "factorSetVersion": "DESNZ-Conversion-Factors-2024",
+  "records": [
+    {
+      "key": "transport.car.gasoline",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "transport",
+      "value": 0.16844,
+      "canonicalUnit": "km",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "transport.car.diesel",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "transport",
+      "value": 0.16984,
+      "canonicalUnit": "km",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "transport.air.short",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "transport",
+      "value": 0.15102,
+      "canonicalUnit": "passenger-km",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "transport.air.medium",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "transport",
+      "value": 0.08534,
+      "canonicalUnit": "passenger-km",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "transport.air.long",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "transport",
+      "value": 0.14787,
+      "canonicalUnit": "passenger-km",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "energy.electricity.grid",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "energy",
+      "value": 0.20705,
+      "canonicalUnit": "kWh",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors (electricity generated)",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "energy.naturalgas.home",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "energy",
+      "value": 0.18293,
+      "canonicalUnit": "kWh",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors (natural gas, gross CV)",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "diet.meal.beef",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "diet",
+      "value": 6.61,
+      "canonicalUnit": "meal",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors (diet, derived)",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "diet.meal.chicken",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "diet",
+      "value": 1.82,
+      "canonicalUnit": "meal",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors (diet, derived)",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    },
+    {
+      "key": "diet.meal.vegetarian",
+      "factorSet": "DEFRA_DESNZ",
+      "category": "diet",
+      "value": 0.69,
+      "canonicalUnit": "meal",
+      "unitSystem": "metric",
+      "source": {
+        "name": "UK DESNZ/DEFRA GHG Conversion Factors (diet, derived)",
+        "url": "https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting",
+        "edition": "2024",
+        "publishedYear": 2024
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "DESNZ-Conversion-Factors-2024"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+# Verdé CI (S30). Runs on push + PR. DEPLOY ARTIFACTS ONLY — this workflow never
+# deploys: it builds the Docker image and uploads test reports/artifacts, but
+# nothing is applied to Cloud Run or any GCP project. Every command here is one
+# that S30 confirmed runnable (locally, or honestly noted as runner-only such as
+# the Docker build, which needs a daemon).
+#
+# Job map:
+#   lint-typecheck   — npm run lint + npx tsc --noEmit (gate)
+#   format-check     — prettier --check (ADVISORY: known pre-existing drift)
+#   unit            — node+ui Vitest projects with coverage (calculator reported)
+#   rules           — tests/rules under `firebase emulators:exec` (Java + tools)
+#   smoke           — the `smoke` Vitest project (standalone server /api/health)
+#   e2e             — Playwright + axe (chromium), report uploaded as artifact
+#   bundle-size     — ENFORCED size-limit gate (threshold from .size-limit.json)
+#   docker-build    — docker build . (build only, runner-only)
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Cancel superseded runs on the same ref to save runner minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Force CI semantics everywhere (Playwright builds its own server, no
+  # reuseExistingServer; retries on).
+  CI: "true"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  # ---- Gate: lint + typecheck -------------------------------------------------
+  lint-typecheck:
+    name: lint + typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint (next lint)
+        run: npm run lint
+      - name: Typecheck (tsc --noEmit)
+        run: npx tsc --noEmit
+
+  # ---- Advisory: format-check -------------------------------------------------
+  # There is a KNOWN pre-existing Prettier drift in ~60 backend files. This job
+  # surfaces it without lying about the gate: it is advisory (continue-on-error),
+  # so a red format-check never blocks the merge while the drift is outstanding.
+  # When the tree is fully formatted this job goes green on its own — remove the
+  # continue-on-error to promote it to a hard gate then.
+  format-check:
+    name: format-check (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prettier --check (advisory; known drift)
+        run: npm run format:check
+
+  # ---- Unit + integration with coverage --------------------------------------
+  # Runs the node + ui Vitest projects (329 tests). Coverage includes the pure
+  # calculator (packages/core/**) so its line/branch coverage is reported.
+  unit:
+    name: unit + integration (coverage)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vitest (node + ui) with coverage
+        run: npx vitest run --coverage
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore
+
+  # ---- Emulator-gated Firestore rules + merge semantics -----------------------
+  # tests/rules self-skip when no emulator is present; here we run them FOR REAL
+  # inside `firebase emulators:exec`, which sets FIRESTORE_EMULATOR_HOST so the
+  # gated cases (cross-uid deny, merge-twice idempotency, batch boundary) execute
+  # against real Firestore transaction semantics. Java 20 -> firebase-tools 13
+  # (pin 15 for Java 21+).
+  rules:
+    name: firestore rules (emulator)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Set up Java (Firestore emulator runtime)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "20"
+      - run: npm ci
+      - name: Install firebase-tools (pinned for Java 20)
+        run: npm install --no-save firebase-tools@13
+      - name: Run tests/rules under the Firestore emulator
+        run: >-
+          npx firebase emulators:exec --only firestore
+          "npx vitest run tests/rules"
+
+  # ---- Smoke: standalone server serves /api/health ---------------------------
+  # The `smoke` Vitest project builds the Next.js standalone output and boots
+  # `node .next/standalone/server.js`, asserting /api/health returns 200 — the
+  # same artifact the Dockerfile ships, validated without Docker.
+  smoke:
+    name: smoke (standalone /api/health)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vitest smoke project
+        run: npx vitest run --project smoke
+        env:
+          APP_ENV: local
+
+  # ---- Playwright e2e + axe ---------------------------------------------------
+  # Builds + starts the real app on a fresh runner (port 3000 is free, CI forces
+  # reuseExistingServer:false) and runs the 27 e2e specs including @axe-core a11y,
+  # chart non-color/data-table, show-before-save, partial-resolve, and the
+  # zero-GCP assertion. The HTML report is uploaded as an artifact.
+  e2e:
+    name: e2e + axe (chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright chromium + OS deps
+        run: npx playwright install --with-deps chromium
+      - name: Playwright test
+        run: npx playwright test
+        env:
+          APP_ENV: local
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # ---- ENFORCED bundle-size gate ---------------------------------------------
+  # size-limit reads the built .next static chunks and FAILS the job if first-load
+  # JS exceeds the 180 KB gzip/route budget in .size-limit.json. A build is needed
+  # first to produce the chunks size-limit measures.
+  bundle-size:
+    name: bundle-size (enforced 180KB/route)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build (produces .next chunks for measurement)
+        run: npm run build
+        env:
+          APP_ENV: local
+      - name: Enforce size-limit budget
+        run: npm run size
+
+  # ---- Docker image build (build only — RUNNER-ONLY) -------------------------
+  # Validates the root Dockerfile produces a standalone image. Build ONLY: nothing
+  # is pushed, tagged for a registry, or deployed. This step needs a Docker daemon
+  # (present on ubuntu-latest; cannot run on a daemon-less machine).
+  docker-build:
+    name: docker build (no deploy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image (no push)
+        run: docker build -t verde:ci .

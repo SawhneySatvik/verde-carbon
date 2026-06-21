@@ -1,0 +1,82 @@
+# Cloud Run service manifest for Verdé (production / GCP mode). Deploy artifact
+# only — NOT applied by any test/CI step here. Apply with:
+#   gcloud run services replace infra/cloudrun.yaml --region <REGION>
+#
+# Correctness floor for multi-instance: the per-anon-uid daily AI
+# quota and rate state are PERSISTED via the DataPort (Firestore), not held only
+# in process memory, so requests served by different instances cannot bypass the
+# quota or run AI cost away. That persisted floor is what makes min-instances >= 1
+# (and any autoscaled max > 1) safe. If the in-memory limiter were ever the sole
+# control, max-instances would have to be pinned to 1 — it is not, because the
+# persisted quota exists.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: verde
+  labels:
+    app: verde
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        # >= 1 avoids cold starts (ADR-005); persisted quota (above) keeps
+        # multi-instance correct, so a max ceiling is for cost, not correctness.
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 60
+      serviceAccountName: verde-runtime@PROJECT_ID.iam.gserviceaccount.com
+      containers:
+        - name: verde
+          # Override at deploy time with an IMMUTABLE tag (git short SHA or
+          # release number), not :latest, so rollbacks point at a known image
+          # (see infra/RUNBOOK.md section 6).
+          image: REGION-docker.pkg.dev/PROJECT_ID/verde/verde:latest
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: gcp
+            - name: NODE_ENV
+              value: production
+            - name: GCP_PROJECT_ID
+              value: PROJECT_ID
+            - name: FIREBASE_PROJECT_ID
+              value: PROJECT_ID
+            # Secrets resolved via SecretsPort from Secret Manager (never literals,
+            # never committed). Mirrors a `gcloud run deploy --set-secrets` mapping:
+            #   --set-secrets=GEMINI_API_KEY=gemini-api-key:latest
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gemini-api-key
+                  key: latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          # Startup + liveness probes hit the dependency-free /api/health handler.
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 3
+  traffic:
+    - percent: 100
+      latestRevision: true

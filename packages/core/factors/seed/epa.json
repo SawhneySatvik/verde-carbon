@@ -1,0 +1,171 @@
+{
+  "factorSet": "EPA",
+  "factorSetVersion": "EPA-GHG-Hub-2025.1",
+  "records": [
+    {
+      "key": "transport.car.gasoline",
+      "factorSet": "EPA",
+      "category": "transport",
+      "value": 8.78,
+      "canonicalUnit": "gallon",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "transport.car.diesel",
+      "factorSet": "EPA",
+      "category": "transport",
+      "value": 10.21,
+      "canonicalUnit": "gallon",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "transport.air.short",
+      "factorSet": "EPA",
+      "category": "transport",
+      "value": 0.207,
+      "canonicalUnit": "passenger-mile",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "transport.air.medium",
+      "factorSet": "EPA",
+      "category": "transport",
+      "value": 0.129,
+      "canonicalUnit": "passenger-mile",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "transport.air.long",
+      "factorSet": "EPA",
+      "category": "transport",
+      "value": 0.163,
+      "canonicalUnit": "passenger-mile",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "energy.electricity.grid",
+      "factorSet": "EPA",
+      "category": "energy",
+      "value": 0.37335187974700007,
+      "canonicalUnit": "kWh",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA eGRID US Annual Average",
+        "url": "https://www.epa.gov/egrid",
+        "edition": "eGRID2022",
+        "publishedYear": 2024
+      },
+      "sourceNative": {
+        "value": 823.1,
+        "unit": "lb/MWh"
+      },
+      "derivation": "823.1 × 0.45359237 / 1000 = 0.37335… kg/kWh",
+      "assertionStyle": "toBeCloseTo:0.373:3",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "energy.naturalgas.home",
+      "factorSet": "EPA",
+      "category": "energy",
+      "value": 5.3,
+      "canonicalUnit": "therm",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "diet.meal.beef",
+      "factorSet": "EPA",
+      "category": "diet",
+      "value": 6.61,
+      "canonicalUnit": "meal",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub (diet, derived)",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "diet.meal.chicken",
+      "factorSet": "EPA",
+      "category": "diet",
+      "value": 1.82,
+      "canonicalUnit": "meal",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub (diet, derived)",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    },
+    {
+      "key": "diet.meal.vegetarian",
+      "factorSet": "EPA",
+      "category": "diet",
+      "value": 0.69,
+      "canonicalUnit": "meal",
+      "unitSystem": "imperial",
+      "source": {
+        "name": "EPA GHG Emission Factors Hub (diet, derived)",
+        "url": "https://www.epa.gov/climateleadership/ghg-emission-factors-hub",
+        "edition": "2025",
+        "publishedYear": 2025
+      },
+      "assertionStyle": "toBe",
+      "factorSetVersion": "EPA-GHG-Hub-2025.1"
+    }
+  ]
+}

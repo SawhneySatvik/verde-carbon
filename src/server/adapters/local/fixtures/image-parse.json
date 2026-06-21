@@ -1,0 +1,68 @@
+{
+  "version": "1",
+  "description": "Recorded AiPort.parseImage fixtures for deterministic, network-free IMAGE parse in dev + CI (ADR-002, S31). The key is the lowercase hex sha256 of the DECODED image bytes (NOT the base64 string), so the UI can fetch a /samples/* file, base64-encode it, POST, and the decoded bytes hash to the same key. Each `result` MUST satisfy the S2 aiParseResultSchema and carries NO emission number — image AI proposes candidateFactorKeys + quantities only; the calculator is the sole producer of CO2e. candidateFactorKeys are REAL keys from the factor seed so the downstream calculator resolves them. Re-record path: see fixtures/README.md.",
+  "entries": [
+    {
+      "sample": "meal-beef-burger.png",
+      "sha256": "c35a8fce8dfb413f498542125b853ef2cd544e0e730f6d7dcf9c780a372ba8a7",
+      "context": "meal",
+      "result": {
+        "items": [
+          {
+            "activity": "beef burger",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.beef",
+            "confidence": 0.86
+          }
+        ]
+      }
+    },
+    {
+      "sample": "meal-veg-bowl.png",
+      "sha256": "aae7c37bb9336a56d3edf3c0e5ddba03386ea06c8285bc7ccf4976500a03a94f",
+      "context": "meal",
+      "result": {
+        "items": [
+          {
+            "activity": "vegetarian bowl",
+            "value": 1,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.vegetarian",
+            "confidence": 0.82
+          }
+        ]
+      }
+    },
+    {
+      "sample": "receipt-grocery.png",
+      "sha256": "7ae822782f90904aff12a31574e430df5217c50bd4e376fa0d1614093546f3de",
+      "context": "receipt",
+      "result": {
+        "items": [
+          {
+            "activity": "beef (grocery)",
+            "value": 2,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.beef",
+            "confidence": 0.71
+          },
+          {
+            "activity": "chicken (grocery)",
+            "value": 3,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.chicken",
+            "confidence": 0.68
+          },
+          {
+            "activity": "vegetables (grocery)",
+            "value": 4,
+            "unit": "meal",
+            "candidateFactorKey": "diet.meal.vegetarian",
+            "confidence": 0.74
+          }
+        ]
+      }
+    }
+  ]
+}

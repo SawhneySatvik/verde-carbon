@@ -1,0 +1,14 @@
+[
+  {
+    "name": "First-load JS — App Router shared + home route (/)",
+    "path": [
+      ".next/static/chunks/main-app-*.js",
+      ".next/static/chunks/webpack-*.js",
+      ".next/static/chunks/[0-9]*.js",
+      ".next/static/chunks/app/layout-*.js",
+      ".next/static/chunks/app/page-*.js"
+    ],
+    "limit": "180 KB",
+    "gzip": true
+  }
+]
