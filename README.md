@@ -188,18 +188,24 @@ These are the deliberate scoping and design assumptions behind the build:
 
 ---
 
-## Deploy to Cloud Run
+## Deploy
 
-The repo ships a root `Dockerfile` (Next.js `output: "standalone"`, non-root, `/api/health` probe). Because `APP_ENV` defaults to `local`, the image **boots and runs the full app with no secrets, Firebase, or Gemini key** — ideal for a live demo.
+`APP_ENV` defaults to `local`, so the app **boots and runs with no secrets, Firebase, or Gemini key** on either host below. For durable persistence and live Gemini, run in **GCP mode** (`APP_ENV=gcp`) — full provisioning, IAM, and the checklist are in [`infra/RUNBOOK.md`](infra/RUNBOOK.md).
 
-**Zero-config demo** — connect the GitHub repo in the Cloud Run console, or run:
+### Cloud Run — recommended for the zero-config demo
+
+The repo ships a root `Dockerfile` (`output: "standalone"`, non-root, `/api/health` probe). Connect the GitHub repo in the Cloud Run console, or run:
 
 ```bash
 gcloud run deploy verde --source . --region REGION --allow-unauthenticated
 ```
 
-Cloud Build auto-detects the `Dockerfile`; no environment variables are required. Data is in-memory (not durable across instance restarts), which is fine for a demo.
+Cloud Build auto-detects the `Dockerfile`; no environment variables are required. With `min-instances: 1` (`infra/cloudrun.yaml`) a single warm instance keeps the in-memory demo store consistent across requests.
 
-**Production (Firestore + Firebase Auth + live Gemini)** — set `APP_ENV=gcp` with the GCP/Firebase/Gemini config and deploy `infra/cloudrun.yaml` (`min-instances: 1`, secrets from Secret Manager). Full step-by-step provisioning, IAM, and the GCP-mode checklist are in [`infra/RUNBOOK.md`](infra/RUNBOOK.md).
+### Vercel
+
+As a standard Next.js 15 app, Verdé deploys to Vercel with no configuration — import the repo (or run `vercel`); the default build just works, and `APP_ENV` defaults to `local`.
+
+> ⚠️ **Serverless persistence caveat.** In `local` mode the data store and anonymous sessions live **in memory, per server process** (by design). Vercel serves each request from a serverless function, so that state isn't durably shared across requests — a single warm walkthrough works, but data can reset on cold starts or between users. For a reliable demo prefer Cloud Run (one long-lived instance); for durable persistence on Vercel, run **GCP mode** (`APP_ENV=gcp` plus the Firebase/Gemini config as Vercel environment variables), which also needs client-side Firebase sign-in for the bearer token.
 
 CI builds the Docker image and uploads reports but **never deploys** — it produces deploy artifacts only.
