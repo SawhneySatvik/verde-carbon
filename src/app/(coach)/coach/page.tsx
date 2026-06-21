@@ -3,17 +3,10 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { m } from "motion/react";
 import { EASE_OUT_QUART } from "@/app/_lib/motion";
-import type { Category } from "@core/schemas";
 import { useAnnouncer } from "../../_components/Announcer";
 import { Badge } from "../../_components/Badge";
 import { Card } from "../../_components/Card";
-import {
-  AlertTriangle,
-  Gauge,
-  Ripple,
-  Sparkles,
-  Target,
-} from "../../_components/icons";
+import { AlertTriangle, Sparkles } from "../../_components/icons";
 import { Composer } from "./_components/Composer";
 import { ConversationIntro } from "./_components/ConversationIntro";
 import { EmptyCoach } from "./_components/EmptyCoach";
@@ -21,6 +14,13 @@ import { GroundingPanel } from "./_components/GroundingPanel";
 import { SuggestedPrompts } from "./_components/SuggestedPrompts";
 import { ThinkingRow } from "./_components/ThinkingRow";
 import { TurnRow } from "./_components/TurnRow";
+import type {
+  CoachGrounding,
+  CoachResponse,
+  CoachTurn,
+  Turn,
+  UserTurn,
+} from "./_components/types";
 
 /**
  * Conversational Coach — chat surface.
@@ -47,50 +47,6 @@ import { TurnRow } from "./_components/TurnRow";
  * guidance". A genuine network/transport failure shows an inline, retryable error
  * that never destroys the user's typed message.
  */
-
-type CoachFallbackReason =
-  | "quota_exceeded"
-  | "ai_unavailable"
-  | "invalid_ai_output";
-
-export interface CoachGrounding {
-  totalKg: number;
-  topCategory: Category | null;
-  topInsightTitles: string[];
-  activityCount: number;
-}
-
-interface CoachResponse {
-  reply: string;
-  fallback: boolean;
-  reason?: CoachFallbackReason;
-  grounding: CoachGrounding;
-}
-
-interface UserTurn {
-  id: string;
-  role: "user";
-  text: string;
-}
-
-interface CoachTurn {
-  id: string;
-  role: "coach";
-  text: string;
-  fallback: boolean;
-}
-
-export type Turn = UserTurn | CoachTurn;
-
-/** Category → visible label + icon, mirroring the Insights screen vocabulary. */
-export const CATEGORY_META: Record<
-  Category,
-  { label: string; Icon: typeof Gauge }
-> = {
-  transport: { label: "Transport", Icon: Gauge },
-  energy: { label: "Home energy", Icon: Ripple },
-  diet: { label: "Food & diet", Icon: Target },
-};
 
 /** Starter prompts — real buttons that prefill + send. */
 const SUGGESTED_PROMPTS: readonly string[] = [

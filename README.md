@@ -1,6 +1,15 @@
 # Verdé
 
+[![CI](https://github.com/SawhneySatvik/verde-carbon/actions/workflows/ci.yml/badge.svg)](https://github.com/SawhneySatvik/verde-carbon/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A5%2022-brightgreen.svg)](.nvmrc)
+[![TypeScript: strict](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)](tsconfig.json)
+[![Tests](https://img.shields.io/badge/tests-472%20unit%20%2B%2038%20e2e%2Faxe-success.svg)](#code-quality)
+[![WCAG 2.2 AA](https://img.shields.io/badge/a11y-WCAG%202.2%20AA-success.svg)](#accessibility-statement)
+
 **Understand, track, and reduce your personal carbon footprint** — in plain language, with every number sourced.
+
+> **Docs:** [Architecture](ARCHITECTURE.md) · [Code quality](#code-quality) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [ADRs](docs/adr/)
 
 Verdé lets anyone (no account required) describe an everyday activity — _"drove 20 miles to work in my gas car"_ — and immediately see a transparent CO2e estimate, a dashboard of their footprint over time, and ranked, personalized actions to cut it. Most carbon trackers either bury you in surveys, hide their math, or quietly invent numbers that erode trust. Verdé closes that gap by making honesty structural.
 
@@ -86,7 +95,7 @@ A single **Next.js 15 (App Router, strict TypeScript)** application, organized a
 - **`src/app/api/*`** exposes AI parse, logging, insights, goals, and linking as Route Handlers so authorization, validation, and rate-limiting are centralized and testable.
 - **Cloud Run deployable**: `next.config.ts` builds `output: "standalone"`; the root `Dockerfile` ships it; `infra/cloudrun.yaml` pins `min-instances: 1` (no cold starts) and a persisted per-user AI quota keeps multi-instance scaling safe.
 
-See the ADRs under [`docs/adr/`](docs/adr/) for the full rationale.
+**Design & docs:** [Architecture & quality guarantees](ARCHITECTURE.md) · [Security](SECURITY.md) · [Contributing & code style](CONTRIBUTING.md) · [ADRs](docs/adr/) (the rationale behind each major decision).
 
 ---
 
@@ -127,12 +136,25 @@ Switching to GCP is a config/env change only (`APP_ENV=gcp` plus project/secret 
 
 | Criterion                       | Evidence in the repo                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Code Quality**                | Strict TypeScript; pure, I/O-free calculator/domain core isolated in `packages/core/*`; narrow hexagonal port boundaries; ESLint rule forbidding GCP imports in core; ESLint + Prettier.                                                                                                                                                                                                                                                                                                  |
+| **Code Quality**                | Strict TypeScript; a pure, I/O-free domain core in [`packages/core/*`](packages/core/) behind four ports; a **build-failing** ESLint rule that keeps the core provider-free ([`eslint-no-gcp-in-core.cjs`](eslint-no-gcp-in-core.cjs)); typed `CalcResolved \| CalcFallback` errors; ESLint (`no-explicit-any`, `max-lines: 350`, …) + Prettier as hard CI gates. See the [**Code quality**](#code-quality) section and [`ARCHITECTURE.md`](ARCHITECTURE.md).                             |
 | **Security**                    | Per-route authorization on every API route; Zod validation of **all inputs and all AI output**; secrets only via the Secrets port (never committed or logged — `src/server/secrets/`); AI endpoints rate-limited with an **in-memory limiter + a persisted per-anon-uid daily quota** (multi-instance-safe) and a request-size cap; free text sanitized on store; second-order prompt-injection test; Firestore rules enforce `request.auth.uid == uid`; OWASP REST + Secrets checklists. |
 | **Efficiency**                  | Cloud Run `min-instances: 1` (no cold starts); Gemini context caching on the static prompt prefix + tight schema and small `maxOutputTokens` as the real cost control; Firestore composite indexes (no unindexed scans); CI-enforced 180 KB gzip/route bundle budget.                                                                                                                                                                                                                     |
 | **Testing**                     | 472 unit & integration tests (Vitest, across 45 files) plus 38 Playwright e2e + axe specs (6 files), all in CI; **exact** CO2e oracle (`toBe`) for published anchors and a **derived** oracle (`toBeCloseTo(0.373, 3)`) for the grid; AI-influence guard tests; emulator-backed Firestore rules + merge-twice/batch-boundary tests; coverage reported with the calculator at high line/branch coverage.                                                                                   |
 | **Accessibility**               | WCAG 2.2 AA target: semantic HTML, skip link, visible focus, ≥ 4.5:1 contrast, reduced-motion honored, charts encoded by more than color with data-table fallbacks; `@axe-core/playwright` on every screen (zero serious/critical) plus explicit chart non-color tests.                                                                                                                                                                                                                   |
 | **Problem-Statement Alignment** | The grounding loop **is** the product: Gemini parses, the calculator computes, every number is sourced and click-through-traceable, and a structural schema makes an AI-invented number impossible.                                                                                                                                                                                                                                                                                       |
+
+---
+
+## Code quality
+
+Quality here is **enforced by tooling and tests**, not left to convention. Full detail lives in [`ARCHITECTURE.md`](ARCHITECTURE.md) (module map + quality guarantees), the [ADRs](docs/adr/), and [`CONTRIBUTING.md`](CONTRIBUTING.md) (the enforced style). Concretely:
+
+- **Strict typing.** `strict`, `noImplicitAny`, `noUnusedLocals` / `noUnusedParameters`, `noImplicitOverride`, `verbatimModuleSyntax`, `isolatedModules` ([`tsconfig.json`](tsconfig.json)). No `any` and no unsafe casts on the happy path.
+- **An enforced architectural boundary.** The domain in [`packages/core/*`](packages/core/) is pure and I/O-free; a custom ESLint rule ([`eslint-no-gcp-in-core.cjs`](eslint-no-gcp-in-core.cjs)) **fails the build** if it ever imports `next`, `react`, `firebase`, or `@google-cloud`. Adapters sit behind four ports ([`packages/core/ports/`](packages/core/ports/)); a test proves the local run constructs **zero** GCP clients ([`container.test.ts`](src/server/container.test.ts)).
+- **Lint + format gates.** ESLint ([`.eslintrc.cjs`](.eslintrc.cjs)) enforces `no-explicit-any`, `consistent-type-imports`, `eqeqeq`, `no-var`, `prefer-const`, `no-console`, and a **`max-lines: 350`** ceiling, so every screen stays composed of small, single-responsibility sub-components in co-located `_components/` folders rather than growing monolithic. Prettier formatting is a **hard CI gate**.
+- **Errors are typed, not stringly.** The calculator returns a `CalcResolved | CalcFallback` discriminated union — an unsourced item is never silently zeroed ([`packages/core/calculator/index.ts`](packages/core/calculator/index.ts)); all routes share one JSON error contract ([`src/server/http/errors.ts`](src/server/http/errors.ts)).
+- **Tests pin the contract.** 472 unit/integration + 38 e2e/axe specs; exact-value oracles pin published factors and a guard test fails if the AI schema ever gains a numeric field ([`calculator.test.ts`](packages/core/calculator/calculator.test.ts), [`ai-parse.guard.test.ts`](packages/core/schemas/ai-parse.guard.test.ts)).
+- **Every push is gated.** Lint, typecheck, format-check, unit, emulator-backed Firestore rules, a standalone smoke test, e2e + axe, the bundle-size budget, and a Docker build all run in CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) — all hard gates; CI never deploys.
 
 ---
 

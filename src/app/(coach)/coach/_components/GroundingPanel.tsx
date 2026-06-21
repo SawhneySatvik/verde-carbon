@@ -1,9 +1,17 @@
 /** The "Grounded in your data" complementary panel — calculator-sourced figures, never AI. */
 
 import Link from "next/link";
+import type { Category } from "@core/schemas";
 import { Card } from "../../../_components/Card";
-import { ChartLine } from "../../../_components/icons";
-import { CATEGORY_META, type CoachGrounding } from "../page";
+import { ChartLine, Gauge, Ripple, Target } from "../../../_components/icons";
+import type { CoachGrounding } from "./types";
+
+/** Category → visible label + icon, mirroring the Insights screen vocabulary. */
+const CATEGORY_META: Record<Category, { label: string; Icon: typeof Gauge }> = {
+  transport: { label: "Transport", Icon: Gauge },
+  energy: { label: "Home energy", Icon: Ripple },
+  diet: { label: "Food & diet", Icon: Target },
+};
 
 export function GroundingPanel({
   headingId,

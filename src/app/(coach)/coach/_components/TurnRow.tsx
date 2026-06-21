@@ -6,7 +6,7 @@ import { m } from "motion/react";
 import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import { Badge } from "../../../_components/Badge";
 import { Ripple } from "../../../_components/icons";
-import type { Turn } from "../page";
+import type { Turn } from "./types";
 
 export function TurnRow({ turn }: { turn: Turn }) {
   if (turn.role === "user") {
