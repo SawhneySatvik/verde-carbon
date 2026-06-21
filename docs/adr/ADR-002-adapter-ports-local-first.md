@@ -25,11 +25,11 @@ Gemini API, Secret Manager). A single **composition root** (`src/server/containe
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Call Firebase/Gemini SDKs directly in routes | Less code | GCP leaks everywhere; can't run locally; untestable | Breaks the local-first requirement outright |
-| Env flags scattered at call sites | Quick | `if (local)` littered through core; drift; leaks | Not auditable; violates the leak-prevention goal |
-| Hexagonal ports + composition root (chosen) | Core is I/O-free and unit-testable; provable "zero GCP" local run; swap by env | Up-front interface design; two impls per port | This is exactly what the local-first requirement demands |
+| Alternative                                  | Pros                                                                           | Cons                                                | Why rejected                                             |
+| -------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------- | -------------------------------------------------------- |
+| Call Firebase/Gemini SDKs directly in routes | Less code                                                                      | GCP leaks everywhere; can't run locally; untestable | Breaks the local-first requirement outright              |
+| Env flags scattered at call sites            | Quick                                                                          | `if (local)` littered through core; drift; leaks    | Not auditable; violates the leak-prevention goal         |
+| Hexagonal ports + composition root (chosen)  | Core is I/O-free and unit-testable; provable "zero GCP" local run; swap by env | Up-front interface design; two impls per port       | This is exactly what the local-first requirement demands |
 
 ## Consequences
 

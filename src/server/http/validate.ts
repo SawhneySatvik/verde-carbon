@@ -17,6 +17,13 @@ export const MAX_REQUEST_BYTES = 16 * 1024;
 export const MAX_AI_INPUT_CHARS = 2_000;
 
 /**
+ * How many recent activities the insights/coach routes pull to build the
+ * calculator-sourced AI grounding/context. Bounds the volume (and therefore the
+ * token cost) that can reach the model.
+ */
+export const MAX_AI_CONTEXT_ACTIVITIES = 200;
+
+/**
  * Hard cap on a DECODED image. A base64 image inflates the JSON body ~33%,
  * so the image route raises its body cap to {@link MAX_IMAGE_REQUEST_BYTES} and
  * then enforces this exact cap on the decoded bytes BEFORE any AI call — an

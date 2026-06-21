@@ -43,6 +43,9 @@ yarn-error.log*
 *-debug.log
 .firebase/
 
+# personal / not-for-the-repo
+/LINKEDIN-POST.md
+
 # submission / dev-internal artifacts (not part of the deliverable)
 # (inline comments are not allowed in .gitignore — keep each pattern on its own line)
 # design-review/: 15 MB of reference screenshots — excluded to keep the repo under the 10 MB limit

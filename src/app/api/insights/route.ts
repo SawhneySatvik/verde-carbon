@@ -1,15 +1,16 @@
 import { z } from "zod";
-import type { Activity } from "@core/schemas";
 import type { AiPort, AuthPort, DataPort } from "@core/ports";
 import { FactorRepository } from "@core/factors/repository";
 import {
+  candidatesFromActivities,
   deriveReductionInsights,
-  type ReductionCandidate,
   type ReductionInsight,
 } from "@core/insights";
 import {
+  AI_RATE_LIMIT,
   capAiInput,
   jsonResponse,
+  MAX_AI_CONTEXT_ACTIVITIES,
   rateLimitKey,
   requireIdentity,
   reserveAiCall,
@@ -76,52 +77,6 @@ export const insightsQuerySchema = z
   })
   .strict();
 
-/**
- * Build reduction candidates from the user's logged activities. The current leg
- * is the user's own activity; the alternative is a lower-carbon swap from the
- * SAME factor vocabulary, so BOTH legs are priced by the calculator.
- */
-function candidatesFromActivities(
-  activities: readonly Activity[],
-): ReductionCandidate[] {
-  const candidates: ReductionCandidate[] = [];
-  for (const a of activities) {
-    if (a.factorKey === "diet.meal.beef") {
-      candidates.push({
-        id: `swap-beef-veg:${a.id}`,
-        title: "Swap a beef meal for a vegetarian one",
-        current: {
-          candidateFactorKey: "diet.meal.beef",
-          value: a.quantity,
-          unit: a.unit,
-        },
-        alternative: {
-          candidateFactorKey: "diet.meal.vegetarian",
-          value: a.quantity,
-          unit: a.unit,
-        },
-      });
-    }
-    if (a.factorKey === "diet.meal.chicken") {
-      candidates.push({
-        id: `swap-chicken-veg:${a.id}`,
-        title: "Swap a chicken meal for a vegetarian one",
-        current: {
-          candidateFactorKey: "diet.meal.chicken",
-          value: a.quantity,
-          unit: a.unit,
-        },
-        alternative: {
-          candidateFactorKey: "diet.meal.vegetarian",
-          value: a.quantity,
-          unit: a.unit,
-        },
-      });
-    }
-  }
-  return candidates;
-}
-
 export interface InsightsDeps {
   auth: AuthPort;
   data: DataPort;
@@ -135,10 +90,7 @@ export type PhrasedInsight = ReductionInsight;
 
 // One process-wide fast-path limiter, mirroring the parse route. The
 // persisted daily quota is the multi-instance correctness floor.
-const sharedLimiter = new TokenBucketRateLimiter({
-  capacity: 20,
-  refillPerSecond: 1,
-});
+const sharedLimiter = new TokenBucketRateLimiter(AI_RATE_LIMIT);
 
 async function resolveDeps(): Promise<InsightsDeps> {
   const { auth, data, ai } = await createContainer();
@@ -213,7 +165,7 @@ export async function handleGet(
       insightsQuerySchema,
     );
     const activities = await deps.data.listActivities(identity.uid, {
-      limit: 200,
+      limit: MAX_AI_CONTEXT_ACTIVITIES,
     });
     const candidates = candidatesFromActivities(activities);
     const { insights, skipped } = deriveReductionInsights(

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { m } from "motion/react";
+import { PRESS_SPRING } from "@/app/_lib/motion";
 import { Lock, Close, ArrowUpRight } from "./icons";
 
 /**
@@ -50,7 +51,7 @@ export function Banner() {
         <div className="flex items-center gap-2">
           <m.span
             whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 520, damping: 32 }}
+            transition={PRESS_SPRING}
             className="inline-flex"
           >
             <Link
@@ -71,7 +72,7 @@ export function Banner() {
             onClick={() => setDismissed(true)}
             aria-label="Dismiss account status message"
             whileTap={{ scale: 0.94 }}
-            transition={{ type: "spring", stiffness: 520, damping: 32 }}
+            transition={PRESS_SPRING}
             className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-text-muted transition-colors duration-fast ease-out-quart hover:bg-surface-hover hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[--ring-offset]"
           >
             <Close size={18} aria-hidden="true" />

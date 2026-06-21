@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { m } from "motion/react";
+import { FOCUS_RING } from "@/app/_lib/classNames";
 
 /**
  * Badge + Chip — status / selection primitives.
@@ -129,8 +130,7 @@ export const Chip = React.forwardRef<HTMLButtonElement, ChipProps>(
           "inline-flex min-h-[44px] items-center gap-1.5 rounded-pill border px-4 py-2",
           "text-body-sm font-medium leading-none",
           "transition-colors duration-fast ease-out-quart",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          "focus-visible:ring-offset-2 focus-visible:ring-offset-[--ring-offset]",
+          FOCUS_RING,
           "disabled:cursor-not-allowed disabled:opacity-60",
           selected
             ? CHIP_SELECTED[tone]

@@ -17,6 +17,16 @@ export interface TokenBucketOptions {
   now?: () => number;
 }
 
+/**
+ * Shared fast-path limiter config for the AI routes (parse, parse-image, coach,
+ * insights): a burst of 20 then ~1/sec sustained, per uid. The persisted daily
+ * quota (aiQuota.ts) remains the multi-instance correctness floor.
+ */
+export const AI_RATE_LIMIT: TokenBucketOptions = {
+  capacity: 20,
+  refillPerSecond: 1,
+};
+
 export interface RateLimitDecision {
   allowed: boolean;
   remaining: number;

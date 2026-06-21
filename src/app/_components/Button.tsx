@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { m } from "motion/react";
+import { PRESS_SPRING } from "@/app/_lib/motion";
 
 /**
  * Button — interactive primitive with "button-in-button" and magnetic press
@@ -123,7 +124,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         // Soft spring press — transform only; honored by reducedMotion="user".
         whileTap={isDisabled ? undefined : { scale: 0.97 }}
-        transition={{ type: "spring", stiffness: 520, damping: 32 }}
+        transition={PRESS_SPRING}
         className={[
           BASE,
           VARIANT[variant],

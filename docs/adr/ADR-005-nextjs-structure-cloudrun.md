@@ -27,11 +27,11 @@ to avoid cold starts and **Gemini context caching** to bound AI cost/latency.
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Server Actions for everything | Less boilerplate; co-located | Harder to apply uniform authz/rate-limit/Zod-on-response + test in isolation; AI endpoints need explicit shape | Security/AI surfaces need handler-level control |
-| Route Handlers for everything incl. trivial posts | Uniform | Boilerplate where not needed | Use actions for trivial same-auth posts only |
-| Route Handlers for AI/mutations + actions for trivial posts (chosen) | Centralized authz/Zod/rate-limit; testable; small surface | Two patterns to know | Best fit for the security + efficiency NFRs |
+| Alternative                                                          | Pros                                                      | Cons                                                                                                           | Why rejected                                    |
+| -------------------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Server Actions for everything                                        | Less boilerplate; co-located                              | Harder to apply uniform authz/rate-limit/Zod-on-response + test in isolation; AI endpoints need explicit shape | Security/AI surfaces need handler-level control |
+| Route Handlers for everything incl. trivial posts                    | Uniform                                                   | Boilerplate where not needed                                                                                   | Use actions for trivial same-auth posts only    |
+| Route Handlers for AI/mutations + actions for trivial posts (chosen) | Centralized authz/Zod/rate-limit; testable; small surface | Two patterns to know                                                                                           | Best fit for the security + efficiency NFRs     |
 
 ## Consequences
 

@@ -2,23 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import type { Locale, Unit } from "@core/schemas";
 import { useAnnouncer } from "../../_components/Announcer";
 import { Badge } from "../../_components/Badge";
-import { Button } from "../../_components/Button";
-import { Card } from "../../_components/Card";
-import { Field } from "../../_components/Field";
 import { Tabs } from "../../_components/Tabs";
-import {
-  ArrowUpRight,
-  CheckCircle,
-  Lock,
-  PlusLog,
-  Ripple,
-} from "../../_components/icons";
+import { Lock, PlusLog, Ripple } from "../../_components/icons";
 import { ParseConfirmation } from "./_components/ParseConfirmation";
-import { FallbackForm } from "./_components/FallbackForm";
 import { ImageLogger } from "./_components/ImageLogger";
+import { TextEntry } from "./_components/TextEntry";
+import { FallbackSection } from "./_components/FallbackSection";
+import { SavedConfirmation } from "./_components/SavedConfirmation";
 
 /**
  * Log Activity. The load-bearing "show before save" surface.
@@ -68,7 +62,6 @@ const reveal = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
 };
-const ease = [0.16, 1, 0.3, 1] as const;
 
 type EntryMode = "text" | "image";
 
@@ -221,7 +214,7 @@ export default function LogPage() {
     <div className="mx-auto max-w-prose px-4 py-16 md:px-6 md:py-24">
       <m.header
         {...reveal}
-        transition={{ duration: 0.44, ease }}
+        transition={{ duration: 0.44, ease: EASE_OUT_QUART }}
         className="mb-8"
       >
         <Badge tone="brand" eyebrow icon={<Ripple size={13} />}>
@@ -240,7 +233,10 @@ export default function LogPage() {
       {/* Entry surface — a two-tab switch. Both tabs feed the SAME confirm /
           saved flow below; the structured fallback is reachable from either. */}
       {isEntry && (
-        <m.div {...reveal} transition={{ duration: 0.48, delay: 0.06, ease }}>
+        <m.div
+          {...reveal}
+          transition={{ duration: 0.48, delay: 0.06, ease: EASE_OUT_QUART }}
+        >
           <Tabs
             label="Choose how to log your activity"
             idBase="log-mode"
@@ -261,81 +257,13 @@ export default function LogPage() {
           >
             {(active) =>
               active === "text" ? (
-                <Card elevation="raised" pad="lg">
-                  <form onSubmit={handleParse} className="space-y-5">
-                    <Field
-                      label="Describe your activity"
-                      id="nl-input"
-                      hint="Mention what you did, how much, and the unit — e.g. distance, meals, energy used."
-                    >
-                      {(controlProps) => (
-                        <textarea
-                          {...controlProps}
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                          rows={3}
-                          placeholder="e.g. drove 20 km to work and had a beef burger"
-                          disabled={phase.kind === "parsing"}
-                          className="block w-full resize-y rounded-xs border border-border-strong bg-surface px-3.5 py-3 text-body-lg text-text placeholder:text-text-muted transition-colors duration-fast ease-out-quart hover:border-border-interactive focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[--ring-offset] disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-text-disabled"
-                        />
-                      )}
-                    </Field>
-
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                      <Button
-                        type="submit"
-                        loading={phase.kind === "parsing"}
-                        disabled={text.trim() === ""}
-                        trailingIcon={<ArrowUpRight size={18} />}
-                      >
-                        {phase.kind === "parsing"
-                          ? "Parsing…"
-                          : "See the breakdown"}
-                      </Button>
-                      <button
-                        type="button"
-                        onClick={() => setPhase({ kind: "fallback" })}
-                        className="inline-flex min-h-[44px] items-center rounded-sm px-2 text-body-sm font-medium text-text-link underline-offset-2 transition-colors duration-fast ease-out-quart hover:text-text-link-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[--ring-offset]"
-                      >
-                        Use the structured form instead
-                      </button>
-                    </div>
-                  </form>
-
-                  {phase.kind === "parsing" && (
-                    <p
-                      role="status"
-                      className="mt-5 inline-flex items-center gap-2 text-body-sm text-brand-fg"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex h-4 w-4 motion-safe:animate-spin"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          className="h-4 w-4"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="9"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            opacity="0.25"
-                          />
-                          <path
-                            d="M21 12a9 9 0 0 0-9-9"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      </span>
-                      Parsing your activity — nothing is saved yet.
-                    </p>
-                  )}
-                </Card>
+                <TextEntry
+                  text={text}
+                  onTextChange={setText}
+                  parsing={phase.kind === "parsing"}
+                  onParse={handleParse}
+                  onUseStructured={() => setPhase({ kind: "fallback" })}
+                />
               ) : (
                 <ImageLogger
                   locale={LOCALE}
@@ -360,32 +288,14 @@ export default function LogPage() {
       )}
 
       {phase.kind === "fallback" && (
-        <div className="space-y-5">
-          {phase.reason && (
-            <Card accent="info" pad="md" innerClassName="flex gap-3">
-              <span
-                aria-hidden="true"
-                className="mt-0.5 inline-flex shrink-0 text-info-fg"
-              >
-                <Ripple size={20} />
-              </span>
-              <p
-                ref={errorRef}
-                tabIndex={-1}
-                role="alert"
-                className="text-body-sm text-info-fg focus:outline-none"
-              >
-                {phase.reason} You can still log it below — no AI needed.
-              </p>
-            </Card>
-          )}
-          <FallbackForm
-            onSubmit={(items) =>
-              setPhase({ kind: "confirm", items: [...items], saving: false })
-            }
-            onCancel={reset}
-          />
-        </div>
+        <FallbackSection
+          reason={phase.reason}
+          errorRef={errorRef}
+          onSubmit={(items) =>
+            setPhase({ kind: "confirm", items: [...items], saving: false })
+          }
+          onCancel={reset}
+        />
       )}
 
       {phase.kind === "confirm" && (
@@ -400,48 +310,12 @@ export default function LogPage() {
       )}
 
       {phase.kind === "saved" && (
-        <m.div {...reveal} transition={{ duration: 0.44, ease }} role="status">
-          <Card elevation="raised" accent="success" pad="lg">
-            <div className="flex items-start gap-3">
-              <span
-                aria-hidden="true"
-                className="mt-0.5 inline-flex shrink-0 text-success-fg"
-              >
-                <CheckCircle size={26} />
-              </span>
-              <div className="min-w-0">
-                <h2
-                  ref={savedHeadingRef}
-                  tabIndex={-1}
-                  className="font-display text-h3 text-text focus:outline-none"
-                >
-                  Logged — added to your dashboard
-                </h2>
-                <p className="mt-3 flex flex-wrap items-baseline gap-2">
-                  <span className="numeric text-display leading-none text-brand-active">
-                    {phase.totalKg.toFixed(2)}
-                  </span>
-                  <span className="text-body text-text-secondary">kg CO₂e</span>
-                </p>
-                {phase.partial && (
-                  <p className="mt-2 text-body-sm text-warning-fg">
-                    Some items were excluded — they couldn&rsquo;t be sourced.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Button
-                type="button"
-                onClick={reset}
-                leadingIcon={<PlusLog size={18} />}
-              >
-                Log another
-              </Button>
-            </div>
-          </Card>
-        </m.div>
+        <SavedConfirmation
+          totalKg={phase.totalKg}
+          partial={phase.partial}
+          headingRef={savedHeadingRef}
+          onReset={reset}
+        />
       )}
     </div>
   );

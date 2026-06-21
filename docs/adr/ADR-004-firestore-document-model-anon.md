@@ -13,8 +13,8 @@ adapter, and the dashboard needs indexed, no-scan queries (efficiency NFR).
 
 ## Decision
 
-Key all user data by the **Firebase uid** — which is the *anonymous* uid until linking, and the
-*same* uid after `linkWithCredential` (anonymous-account linking preserves the uid), so **no data
+Key all user data by the **Firebase uid** — which is the _anonymous_ uid until linking, and the
+_same_ uid after `linkWithCredential` (anonymous-account linking preserves the uid), so **no data
 migration is needed** on sign-in in the common case. Document model:
 
 ```
@@ -34,11 +34,11 @@ this runs against the emulator/in-mem local adapter or Firestore.
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Separate anon store, copy everything on sign-in | Clear separation | Always-migrate; data-loss risk; more code | Linking preserves uid — usually no copy needed |
-| One flat `activities` collection with `uid` field | Simple rules | Weaker per-user isolation; broader queries | Subcollections give cleaner per-user authz + indexing |
-| uid-keyed subcollections + linkWithCredential (chosen) | No migration on the happy path; clean authz; indexed | Conflict case still needs an explicit merge | Matches the anonymous-first model |
+| Alternative                                            | Pros                                                 | Cons                                        | Why rejected                                          |
+| ------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| Separate anon store, copy everything on sign-in        | Clear separation                                     | Always-migrate; data-loss risk; more code   | Linking preserves uid — usually no copy needed        |
+| One flat `activities` collection with `uid` field      | Simple rules                                         | Weaker per-user isolation; broader queries  | Subcollections give cleaner per-user authz + indexing |
+| uid-keyed subcollections + linkWithCredential (chosen) | No migration on the happy path; clean authz; indexed | Conflict case still needs an explicit merge | Matches the anonymous-first model                     |
 
 ## Consequences
 

@@ -15,6 +15,7 @@ export { extractBearerToken, requireIdentity, authorizeOwner } from "./authz";
 export {
   MAX_REQUEST_BYTES,
   MAX_AI_INPUT_CHARS,
+  MAX_AI_CONTEXT_ACTIVITIES,
   MAX_AI_INPUT_TOKENS,
   MAX_IMAGE_BYTES,
   MAX_IMAGE_REQUEST_BYTES,
@@ -32,6 +33,7 @@ export {
 } from "./validate";
 export {
   TokenBucketRateLimiter,
+  AI_RATE_LIMIT,
   rateLimitKey,
   enforceRateLimit,
   type TokenBucketOptions,

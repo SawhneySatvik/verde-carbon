@@ -6,7 +6,7 @@
 #
 # Job map:
 #   lint-typecheck   — npm run lint + npx tsc --noEmit (gate)
-#   format-check     — prettier --check (ADVISORY: known pre-existing drift)
+#   format-check     — prettier --check (hard gate)
 #   unit            — node+ui Vitest projects with coverage (calculator reported)
 #   rules           — tests/rules under `firebase emulators:exec` (Java + tools)
 #   smoke           — the `smoke` Vitest project (standalone server /api/health)
@@ -51,16 +51,12 @@ jobs:
       - name: Typecheck (tsc --noEmit)
         run: npx tsc --noEmit
 
-  # ---- Advisory: format-check -------------------------------------------------
-  # There is a KNOWN pre-existing Prettier drift in ~60 backend files. This job
-  # surfaces it without lying about the gate: it is advisory (continue-on-error),
-  # so a red format-check never blocks the merge while the drift is outstanding.
-  # When the tree is fully formatted this job goes green on its own — remove the
-  # continue-on-error to promote it to a hard gate then.
+  # ---- format-check (hard gate) -----------------------------------------------
+  # The whole tree is Prettier-clean, so this is an enforced gate: any formatting
+  # drift fails CI.
   format-check:
-    name: format-check (advisory)
+    name: format-check
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,7 +64,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Prettier --check (advisory; known drift)
+      - name: Prettier --check
         run: npm run format:check
 
   # ---- Unit + integration with coverage --------------------------------------

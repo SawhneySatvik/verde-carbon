@@ -24,16 +24,16 @@ producer of emission numbers in the system.
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Free-text prompt: "don't give numbers" | Trivial | No enforcement; model leaks numbers; untestable | Violates the hard rule; not auditable |
-| Let AI return CO2e, validate the range | One round-trip | The number is still AI-invented; range checks can't make it correct or sourced | Defeats the entire product premise |
-| AI returns parse + factor key; calculator computes (chosen) | Number provably from a vetted factor; fully testable; auditable provenance | Two layers; needs a factor-key vocabulary the model maps to | This is the point of the product |
+| Alternative                                                 | Pros                                                                       | Cons                                                                           | Why rejected                          |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------- |
+| Free-text prompt: "don't give numbers"                      | Trivial                                                                    | No enforcement; model leaks numbers; untestable                                | Violates the hard rule; not auditable |
+| Let AI return CO2e, validate the range                      | One round-trip                                                             | The number is still AI-invented; range checks can't make it correct or sourced | Defeats the entire product premise    |
+| AI returns parse + factor key; calculator computes (chosen) | Number provably from a vetted factor; fully testable; auditable provenance | Two layers; needs a factor-key vocabulary the model maps to                    | This is the point of the product      |
 
 ## Consequences
 
 - **Positive:** Every UI number is traceable to a factor + arithmetic; exact-value Vitest tests pin
-  the calculator (1 gal gasoline = 8.78 kg, etc.); a test asserts the AI schema *cannot* carry a
+  the calculator (1 gal gasoline = 8.78 kg, etc.); a test asserts the AI schema _cannot_ carry a
   CO2e field; prompt-injection that asks for a number simply has nowhere to put it.
 - **Negative:** The model must map free text onto a controlled `candidateFactorKey` vocabulary;
   ambiguous matches require a UX confirm step (already designed). Maintaining the key vocabulary is

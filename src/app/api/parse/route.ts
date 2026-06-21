@@ -3,6 +3,7 @@ import { aiParseResultSchema, type AiParseResult } from "@core/schemas";
 import type { AiPort, AuthPort, DataPort } from "@core/ports";
 import { createContainer } from "@/server/container";
 import {
+  AI_RATE_LIMIT,
   assertAiInputWithinCap,
   enforceRateLimit,
   jsonResponse,
@@ -71,10 +72,7 @@ export interface ParseDeps {
 
 // One process-wide fast-path limiter (per-instance burst control); the persisted
 // daily quota in the DataPort is the multi-instance correctness floor.
-const sharedLimiter = new TokenBucketRateLimiter({
-  capacity: 20,
-  refillPerSecond: 1,
-});
+const sharedLimiter = new TokenBucketRateLimiter(AI_RATE_LIMIT);
 
 async function resolveDeps(): Promise<ParseDeps> {
   const { auth, data, ai } = await createContainer();

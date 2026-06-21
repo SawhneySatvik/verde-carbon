@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import type { Locale, Unit } from "@core/schemas";
 import { useAnnouncer } from "../../../_components/Announcer";
 import { Badge } from "../../../_components/Badge";
@@ -76,7 +77,6 @@ const ALLOWED_MEDIA: Record<string, ImageMediaType> = {
   "image/webp": "image/webp",
 };
 
-const ease = [0.16, 1, 0.3, 1] as const;
 const reveal = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
@@ -236,7 +236,7 @@ export function ImageLogger({
   }
 
   return (
-    <m.div {...reveal} transition={{ duration: 0.44, ease }}>
+    <m.div {...reveal} transition={{ duration: 0.44, ease: EASE_OUT_QUART }}>
       <Card elevation="raised" pad="lg">
         <div className="space-y-6">
           <div>

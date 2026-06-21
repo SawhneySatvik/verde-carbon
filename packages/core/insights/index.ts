@@ -1,4 +1,4 @@
-import type { FactorSource } from "@core/schemas";
+import type { Activity, FactorSource } from "@core/schemas";
 import {
   FactorRepository,
   type ResolutionPreference,
@@ -80,6 +80,53 @@ function toBasis(r: CalcResolved): FactorBasis {
     source: r.source,
     co2eKg: r.co2eKg,
   };
+}
+
+/**
+ * Build reduction candidates from a user's logged activities: each beef or
+ * chicken meal becomes a "swap to a vegetarian meal" candidate over the SAME
+ * factor vocabulary, so both legs are priced by the calculator (never an
+ * invented number). Activities with no known swap are omitted.
+ */
+export function candidatesFromActivities(
+  activities: readonly Activity[],
+): ReductionCandidate[] {
+  const candidates: ReductionCandidate[] = [];
+  for (const a of activities) {
+    if (a.factorKey === "diet.meal.beef") {
+      candidates.push({
+        id: `swap-beef-veg:${a.id}`,
+        title: "Swap a beef meal for a vegetarian one",
+        current: {
+          candidateFactorKey: "diet.meal.beef",
+          value: a.quantity,
+          unit: a.unit,
+        },
+        alternative: {
+          candidateFactorKey: "diet.meal.vegetarian",
+          value: a.quantity,
+          unit: a.unit,
+        },
+      });
+    }
+    if (a.factorKey === "diet.meal.chicken") {
+      candidates.push({
+        id: `swap-chicken-veg:${a.id}`,
+        title: "Swap a chicken meal for a vegetarian one",
+        current: {
+          candidateFactorKey: "diet.meal.chicken",
+          value: a.quantity,
+          unit: a.unit,
+        },
+        alternative: {
+          candidateFactorKey: "diet.meal.vegetarian",
+          value: a.quantity,
+          unit: a.unit,
+        },
+      });
+    }
+  }
+  return candidates;
 }
 
 export interface DeriveInsightsOptions {

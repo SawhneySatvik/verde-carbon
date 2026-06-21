@@ -24,7 +24,10 @@ function postWithToken(token: string | null): Request {
   if (token !== null) {
     headers.authorization = `Bearer ${token}`;
   }
-  return new Request("http://localhost/api/session", { method: "POST", headers });
+  return new Request("http://localhost/api/session", {
+    method: "POST",
+    headers,
+  });
 }
 
 function getWithToken(token: string | null): Request {

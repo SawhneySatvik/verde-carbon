@@ -20,7 +20,7 @@ Four layers:
    kg), round-trip unit-conversion tests, and a **guard test** asserting the AI response schema
    cannot carry a CO2e field. High line/branch coverage required here.
 2. **Vitest integration** — Route Handlers against **local adapters** (in-mem/emulator + recorded AI
-   fixtures): authz rejection, Zod rejection of bad input *and* bad AI output, rate-limit behavior,
+   fixtures): authz rejection, Zod rejection of bad input _and_ bad AI output, rate-limit behavior,
    structured-fallback path when AI is unavailable.
 3. **Playwright e2e** — the anonymous core loop: onboarding → NL log (show-before-save) →
    dashboard → insights → goal/streak → sign-in linking (no data loss), all against local adapters.
@@ -31,11 +31,11 @@ All four run in CI with coverage reported and a bundle-size budget gate.
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Unit tests only | Fast | Doesn't prove the loop, authz, or a11y | Testing NFR demands integration + e2e + a11y |
-| Mock GCP SDKs ad hoc per test | Flexible | Drifts from the real adapter seam; brittle | The adapter ports already give a clean local seam |
-| Layered Vitest + Playwright + axe on local adapters (chosen) | Proves determinism, security, loop, a11y; no creds | More CI time | Matches what is judged |
+| Alternative                                                  | Pros                                               | Cons                                       | Why rejected                                      |
+| ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------ | ------------------------------------------------- |
+| Unit tests only                                              | Fast                                               | Doesn't prove the loop, authz, or a11y     | Testing NFR demands integration + e2e + a11y      |
+| Mock GCP SDKs ad hoc per test                                | Flexible                                           | Drifts from the real adapter seam; brittle | The adapter ports already give a clean local seam |
+| Layered Vitest + Playwright + axe on local adapters (chosen) | Proves determinism, security, loop, a11y; no creds | More CI time                               | Matches what is judged                            |
 
 ## Consequences
 

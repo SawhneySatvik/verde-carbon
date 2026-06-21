@@ -39,11 +39,11 @@ field stamps each computed result so provenance is reproducible.
 
 ## Alternatives considered
 
-| Alternative | Pros | Cons | Why rejected |
-|---|---|---|---|
-| Hard-code factors in calculator code | Fast | Not sourced/versioned; can't extend without code edits | Breaks sourcing + extensibility |
-| Store factors only in Firestore | Central | Couples the pure calculator to I/O; can't run/test offline | Calculator must stay pure/offline-testable |
-| Typed versioned seed JSON + FactorRepository (chosen) | Sourced, versioned, offline, extensible, testable | Must maintain the key vocabulary + conversions | Meets all of the sourcing + extensibility goals |
+| Alternative                                           | Pros                                              | Cons                                                       | Why rejected                                    |
+| ----------------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------- |
+| Hard-code factors in calculator code                  | Fast                                              | Not sourced/versioned; can't extend without code edits     | Breaks sourcing + extensibility                 |
+| Store factors only in Firestore                       | Central                                           | Couples the pure calculator to I/O; can't run/test offline | Calculator must stay pure/offline-testable      |
+| Typed versioned seed JSON + FactorRepository (chosen) | Sourced, versioned, offline, extensible, testable | Must maintain the key vocabulary + conversions             | Meets all of the sourcing + extensibility goals |
 
 ## Consequences
 

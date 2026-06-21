@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { m, useReducedMotion } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { Gauge, PlusLog, ChartLine, Target, Coach, Menu, Close } from "./icons";
 
@@ -49,8 +50,6 @@ const NAV_ITEMS: ReadonlyArray<{
   { href: "/goal", label: "Goal", Icon: Target },
 ];
 
-const ease = [0.16, 1, 0.3, 1] as const;
-
 export function MobileNavDrawer() {
   const [open, setOpen] = useState(false);
   const reactId = useId();
@@ -67,8 +66,12 @@ export function MobileNavDrawer() {
   // so the opacity crossfade Framer otherwise keeps running (panel 0.6→1, scrim
   // 0→1) resolves immediately to its final opaque state — no fade leak.
   const reduce = useReducedMotion();
-  const transition = reduce ? { duration: 0 } : { duration: 0.28, ease };
-  const scrimTransition = reduce ? { duration: 0 } : { duration: 0.2, ease };
+  const transition = reduce
+    ? { duration: 0 }
+    : { duration: 0.28, ease: EASE_OUT_QUART };
+  const scrimTransition = reduce
+    ? { duration: 0 }
+    : { duration: 0.2, ease: EASE_OUT_QUART };
 
   // Close on navigation: when the route changes while the drawer is open, the
   // user has followed a link — collapse it (focus returns to the trigger).

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import type { Locale, UnitSystem } from "@core/schemas";
 import { useAnnouncer } from "../../_components/Announcer";
 import { Badge } from "../../_components/Badge";
@@ -43,9 +44,6 @@ import {
  */
 
 const TOTAL_STEPS = STEP_TITLES.length;
-
-/** Step reveal — opacity + small translate only (reduced-motion safe). */
-const stepEase = [0.16, 1, 0.3, 1] as const;
 
 export default function WizardPage() {
   const { announce } = useAnnouncer();
@@ -223,7 +221,7 @@ export default function WizardPage() {
               key={step}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.32, ease: stepEase }}
+              transition={{ duration: 0.32, ease: EASE_OUT_QUART }}
             >
               {step === 0 && (
                 <StepHomeEnergy

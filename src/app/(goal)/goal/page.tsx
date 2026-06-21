@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import type { Goal, Streak } from "@core/schemas";
 import { useAnnouncer } from "../../_components/Announcer";
 import { Badge } from "../../_components/Badge";
-import { Button } from "../../_components/Button";
-import { Card } from "../../_components/Card";
-import { Field, Input } from "../../_components/Field";
-import { AlertTriangle, Ripple, Target } from "../../_components/icons";
+import { AlertTriangle, Target } from "../../_components/icons";
 import { ConfirmDialog } from "./_components/ConfirmDialog";
+import { GoalForm } from "./_components/GoalForm";
+import { StreakExplainer } from "./_components/StreakExplainer";
 
 /**
  * Goal — target + period form.
@@ -38,14 +38,6 @@ type Phase =
       streak: Streak | null;
     };
 
-const PERIODS: ReadonlyArray<{ value: Period; label: string }> = [
-  { value: "weekly", label: "Weekly" },
-  { value: "monthly", label: "Monthly" },
-  { value: "yearly", label: "Yearly" },
-];
-
-const ease = [0.16, 1, 0.3, 1] as const;
-
 export default function GoalPage() {
   const { announce } = useAnnouncer();
   const reactId = useId();
@@ -60,6 +52,7 @@ export default function GoalPage() {
   const targetRef = useRef<HTMLInputElement | null>(null);
   const baselineRef = useRef<HTMLInputElement | null>(null);
   const targetId = `target-${reactId}`;
+  const baselineId = `baseline-${reactId}`;
 
   const load = useCallback(async () => {
     setPhase({ kind: "loading" });
@@ -205,7 +198,7 @@ export default function GoalPage() {
       <m.header
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.44, ease }}
+        transition={{ duration: 0.44, ease: EASE_OUT_QUART }}
         className="mb-10"
       >
         <Badge tone="brand" eyebrow icon={<Target size={13} />}>
@@ -237,150 +230,38 @@ export default function GoalPage() {
       <m.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.44, delay: 0.06, ease }}
+        transition={{ duration: 0.44, delay: 0.06, ease: EASE_OUT_QUART }}
       >
-        <Card as="div" pad="lg">
-          <form onSubmit={handleSave}>
-            <div className="space-y-6">
-              <Field
-                id={targetId}
-                label="Reduction target (percent vs baseline)"
-                error={
-                  fieldError ? (
-                    <span className="inline-flex items-center gap-1.5">
-                      <AlertTriangle
-                        size={15}
-                        className="shrink-0"
-                        aria-hidden="true"
-                      />
-                      {fieldError}
-                    </span>
-                  ) : undefined
-                }
-              >
-                {(controlProps) => (
-                  <div className="flex items-center gap-2.5">
-                    <Input
-                      {...controlProps}
-                      ref={targetRef}
-                      type="number"
-                      inputMode="numeric"
-                      min={1}
-                      step="1"
-                      value={targetPct}
-                      onChange={(e) => setTargetPct(e.target.value)}
-                      invalid={Boolean(fieldError)}
-                      className="numeric w-28"
-                    />
-                    <span className="text-body text-text-secondary">
-                      % reduction
-                    </span>
-                  </div>
-                )}
-              </Field>
-
-              <fieldset>
-                <legend className="text-body-sm font-medium text-text">
-                  Period
-                </legend>
-                <div className="mt-2.5 flex flex-wrap gap-2.5">
-                  {PERIODS.map((p) => (
-                    <label
-                      key={p.value}
-                      className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-pill border border-border px-4 py-2.5 text-body-sm font-medium text-text-secondary transition-colors duration-fast ease-out-quart hover:bg-surface-hover hover:text-text has-[:checked]:border-brand has-[:checked]:bg-surface-brand-subtle has-[:checked]:text-brand-fg has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-[--ring-offset]"
-                    >
-                      <input
-                        type="radio"
-                        name="period"
-                        value={p.value}
-                        checked={period === p.value}
-                        onChange={() => setPeriod(p.value)}
-                        className="h-4 w-4 border-border-interactive text-brand focus-visible:outline-none"
-                      />
-                      {p.label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <Field
-                id={`baseline-${reactId}`}
-                label="Baseline footprint (kg CO₂e)"
-                hint="Your starting point. Progress is measured against this."
-              >
-                {(controlProps) => (
-                  <Input
-                    {...controlProps}
-                    ref={baselineRef}
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
-                    step="any"
-                    value={baselineKg}
-                    onChange={(e) => setBaselineKg(e.target.value)}
-                    className="numeric w-44"
-                  />
-                )}
-              </Field>
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-border pt-6">
-              <Button type="submit" loading={saving}>
-                {phase.goal ? "Update goal" : "Save goal"}
-              </Button>
-              {phase.goal && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setConfirmClear(true)}
-                  disabled={saving}
-                  className="text-danger-fg"
-                >
-                  Clear goal
-                </Button>
-              )}
-            </div>
-          </form>
-        </Card>
+        <GoalForm
+          hasGoal={Boolean(phase.goal)}
+          targetId={targetId}
+          baselineId={baselineId}
+          targetPct={targetPct}
+          period={period}
+          baselineKg={baselineKg}
+          fieldError={fieldError}
+          saving={saving}
+          targetRef={targetRef}
+          baselineRef={baselineRef}
+          onTargetPctChange={setTargetPct}
+          onPeriodChange={setPeriod}
+          onBaselineKgChange={setBaselineKg}
+          onSave={handleSave}
+          onClear={() => setConfirmClear(true)}
+        />
       </m.div>
 
       <m.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.44, delay: 0.12, ease }}
+        transition={{ duration: 0.44, delay: 0.12, ease: EASE_OUT_QUART }}
         aria-labelledby={`streak-rule-${reactId}`}
         className="mt-6"
       >
-        <Card as="div" pad="lg">
-          <div className="flex items-center gap-2.5">
-            <span
-              aria-hidden="true"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-brand-subtle text-brand-fg"
-            >
-              <Ripple size={18} />
-            </span>
-            <h2
-              id={`streak-rule-${reactId}`}
-              className="font-display text-h3 text-text"
-            >
-              How your streak works
-            </h2>
-          </div>
-          <p className="mt-4 flex items-baseline gap-2.5">
-            <span className="numeric font-display text-display text-brand-active">
-              {phase.streak?.count ?? 0}
-            </span>
-            <span className="font-display text-h3 text-text-muted">
-              day{(phase.streak?.count ?? 0) === 1 ? "" : "s"}
-            </span>
-          </p>
-          <p className="mt-3 max-w-[60ch] text-pretty text-body text-text-secondary">
-            Your streak counts each calendar day you log an activity, measured
-            in your local time zone. Log on consecutive days and it grows; miss
-            a full day and it restarts at one. We always show the change — a
-            streak is never reset silently.
-          </p>
-        </Card>
+        <StreakExplainer
+          count={phase.streak?.count ?? 0}
+          headingId={`streak-rule-${reactId}`}
+        />
       </m.section>
 
       {confirmClear && (

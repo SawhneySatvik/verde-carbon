@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import { Badge } from "./_components/Badge";
 import { Card } from "./_components/Card";
 import { BrandMark } from "./_components/BrandMark";
@@ -58,7 +59,6 @@ const reveal = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
 };
-const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function WelcomePage() {
   return (
@@ -70,7 +70,10 @@ export default function WelcomePage() {
       >
         {/* Left — editorial copy column (wider). */}
         <div className="lg:col-span-7">
-          <m.div {...reveal} transition={{ duration: 0.48, ease }}>
+          <m.div
+            {...reveal}
+            transition={{ duration: 0.48, ease: EASE_OUT_QUART }}
+          >
             <Badge tone="brand" eyebrow>
               Carbon footprint, made honest
             </Badge>
@@ -79,7 +82,7 @@ export default function WelcomePage() {
           <m.h1
             id="welcome-title"
             {...reveal}
-            transition={{ duration: 0.48, delay: 0.06, ease }}
+            transition={{ duration: 0.48, delay: 0.06, ease: EASE_OUT_QUART }}
             className="mt-5 max-w-[16ch] text-balance font-display text-[clamp(2.5rem,6vw,4rem)] font-bold leading-[1.04] tracking-[-0.02em] text-text"
           >
             Shrink your carbon footprint, on numbers you can trust.
@@ -87,7 +90,7 @@ export default function WelcomePage() {
 
           <m.p
             {...reveal}
-            transition={{ duration: 0.48, delay: 0.12, ease }}
+            transition={{ duration: 0.48, delay: 0.12, ease: EASE_OUT_QUART }}
             className="mt-6 max-w-[54ch] text-pretty text-body-lg text-text-secondary"
           >
             Describe your day in plain language. Verdé shows you the parsed
@@ -97,7 +100,7 @@ export default function WelcomePage() {
 
           <m.div
             {...reveal}
-            transition={{ duration: 0.48, delay: 0.18, ease }}
+            transition={{ duration: 0.48, delay: 0.18, ease: EASE_OUT_QUART }}
             className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
           >
             {/* Primary CTA — a real <a> (anchor) so it keeps the link role the
@@ -125,7 +128,7 @@ export default function WelcomePage() {
 
           <m.p
             {...reveal}
-            transition={{ duration: 0.48, delay: 0.24, ease }}
+            transition={{ duration: 0.48, delay: 0.24, ease: EASE_OUT_QUART }}
             className="mt-6 text-body-sm text-text-muted"
           >
             Prefer to log right away?{" "}
@@ -142,7 +145,7 @@ export default function WelcomePage() {
         {/* Right — the brand moment: a floating "instrument" panel. */}
         <m.div
           {...reveal}
-          transition={{ duration: 0.56, delay: 0.14, ease }}
+          transition={{ duration: 0.56, delay: 0.14, ease: EASE_OUT_QUART }}
           className="lg:col-span-5"
         >
           <HeroInstrument />
@@ -156,7 +159,7 @@ export default function WelcomePage() {
       >
         <m.div
           {...reveal}
-          transition={{ duration: 0.48, ease }}
+          transition={{ duration: 0.48, ease: EASE_OUT_QUART }}
           className="max-w-[46ch]"
         >
           <h2 className="font-display text-h2 text-balance text-text">
@@ -173,7 +176,11 @@ export default function WelcomePage() {
             <m.li
               key={item.n}
               {...reveal}
-              transition={{ duration: 0.44, delay: 0.06 * i, ease }}
+              transition={{
+                duration: 0.44,
+                delay: 0.06 * i,
+                ease: EASE_OUT_QUART,
+              }}
               className={
                 i === 0 ? "lg:col-span-6 lg:row-span-2" : "lg:col-span-6"
               }
@@ -259,7 +266,7 @@ function HeroInstrument() {
           <m.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.56, delay: 0.3, ease }}
+            transition={{ duration: 0.56, delay: 0.3, ease: EASE_OUT_QUART }}
             className="flex h-40 w-40 items-center justify-center rounded-pill bg-surface text-brand shadow-float ring-1 ring-[--bezel-ring]"
           >
             <BrandMark size={104} />

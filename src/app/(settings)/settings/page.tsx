@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { m } from "motion/react";
+import { EASE_OUT_QUART } from "@/app/_lib/motion";
 import type { FactorSet, UnitSystem } from "@core/schemas";
 import { useAnnouncer } from "../../_components/Announcer";
 import { Card } from "../../_components/Card";
@@ -63,7 +64,6 @@ const reveal = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
 };
-const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function SettingsPage() {
   const { announce } = useAnnouncer();
@@ -99,7 +99,7 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
       <m.header
         {...reveal}
-        transition={{ duration: 0.48, ease }}
+        transition={{ duration: 0.48, ease: EASE_OUT_QUART }}
         className="mb-10"
       >
         <Badge tone="brand" eyebrow icon={<SettingsIcon size={13} />}>
@@ -116,7 +116,10 @@ export default function SettingsPage() {
 
       <form className="space-y-6">
         {/* ── Emission factor set ── */}
-        <m.div {...reveal} transition={{ duration: 0.48, delay: 0.06, ease }}>
+        <m.div
+          {...reveal}
+          transition={{ duration: 0.48, delay: 0.06, ease: EASE_OUT_QUART }}
+        >
           <Card as="div" pad="lg">
             <fieldset>
               <legend className="text-h4 text-text">Emission factor set</legend>
@@ -187,7 +190,10 @@ export default function SettingsPage() {
         </m.div>
 
         {/* ── Units (segmented control) ── */}
-        <m.div {...reveal} transition={{ duration: 0.48, delay: 0.12, ease }}>
+        <m.div
+          {...reveal}
+          transition={{ duration: 0.48, delay: 0.12, ease: EASE_OUT_QUART }}
+        >
           <Card as="div" pad="lg">
             <fieldset>
               <legend className="text-h4 text-text">Units</legend>
@@ -246,7 +252,7 @@ export default function SettingsPage() {
         {/* ── Motion (honours the OS preference automatically) ── */}
         <m.section
           {...reveal}
-          transition={{ duration: 0.48, delay: 0.18, ease }}
+          transition={{ duration: 0.48, delay: 0.18, ease: EASE_OUT_QUART }}
           aria-labelledby={`motion-${reactId}`}
         >
           <Card as="div" pad="lg">

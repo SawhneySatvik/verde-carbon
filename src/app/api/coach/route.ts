@@ -4,14 +4,16 @@ import type { AiCoachContext, AiPort, AuthPort, DataPort } from "@core/ports";
 import { FactorRepository } from "@core/factors/repository";
 import { roundForDisplay } from "@core/units/index";
 import {
+  candidatesFromActivities,
   deriveReductionInsights,
-  type ReductionCandidate,
 } from "@core/insights";
 import {
+  AI_RATE_LIMIT,
   assertAiInputWithinCap,
   capAiInput,
   enforceRateLimit,
   jsonResponse,
+  MAX_AI_CONTEXT_ACTIVITIES,
   rateLimitKey,
   readJsonBody,
   requireIdentity,
@@ -109,10 +111,7 @@ export interface CoachDeps {
 
 // One process-wide fast-path limiter, mirroring parse/insights. The
 // persisted daily quota in the DataPort is the multi-instance correctness floor.
-const sharedLimiter = new TokenBucketRateLimiter({
-  capacity: 20,
-  refillPerSecond: 1,
-});
+const sharedLimiter = new TokenBucketRateLimiter(AI_RATE_LIMIT);
 
 async function resolveDeps(): Promise<CoachDeps> {
   const { auth, data, ai } = await createContainer();
@@ -123,53 +122,6 @@ async function resolveDeps(): Promise<CoachDeps> {
     repository: FactorRepository.fromSeed(),
     limiter: sharedLimiter,
   };
-}
-
-/**
- * Build the candidate reductions for grounding, mirroring the insights route:
- * the current leg is the user's own logged activity and the alternative is a
- * lower-carbon swap from the SAME factor vocabulary, so BOTH legs are priced by
- * the calculator — this never invents a number.
- */
-function candidatesFromActivities(
-  activities: readonly Activity[],
-): ReductionCandidate[] {
-  const candidates: ReductionCandidate[] = [];
-  for (const a of activities) {
-    if (a.factorKey === "diet.meal.beef") {
-      candidates.push({
-        id: `swap-beef-veg:${a.id}`,
-        title: "Swap a beef meal for a vegetarian one",
-        current: {
-          candidateFactorKey: "diet.meal.beef",
-          value: a.quantity,
-          unit: a.unit,
-        },
-        alternative: {
-          candidateFactorKey: "diet.meal.vegetarian",
-          value: a.quantity,
-          unit: a.unit,
-        },
-      });
-    }
-    if (a.factorKey === "diet.meal.chicken") {
-      candidates.push({
-        id: `swap-chicken-veg:${a.id}`,
-        title: "Swap a chicken meal for a vegetarian one",
-        current: {
-          candidateFactorKey: "diet.meal.chicken",
-          value: a.quantity,
-          unit: a.unit,
-        },
-        alternative: {
-          candidateFactorKey: "diet.meal.vegetarian",
-          value: a.quantity,
-          unit: a.unit,
-        },
-      });
-    }
-  }
-  return candidates;
 }
 
 /**
@@ -267,7 +219,7 @@ export async function handleCoach(
     // Grounding is computed from the user's OWN calculator data and is returned
     // regardless of whether the AI path succeeds — the UI keeps its numbers.
     const activities = await deps.data.listActivities(identity.uid, {
-      limit: 200,
+      limit: MAX_AI_CONTEXT_ACTIVITIES,
     });
     const grounding = buildGrounding(deps.repository, activities);
 

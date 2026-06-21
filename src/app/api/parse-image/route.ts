@@ -7,6 +7,7 @@ import {
 import type { AiPort, AuthPort, DataPort } from "@core/ports";
 import { createContainer } from "@/server/container";
 import {
+  AI_RATE_LIMIT,
   assertImageBytesWithinCap,
   enforceRateLimit,
   jsonResponse,
@@ -83,10 +84,7 @@ export interface ParseImageDeps {
 // daily quota in the DataPort is the multi-instance correctness floor. This
 // is the SAME limiter contract as /api/parse, kept per-route so an image burst
 // and a text burst are independently throttled.
-const sharedLimiter = new TokenBucketRateLimiter({
-  capacity: 20,
-  refillPerSecond: 1,
-});
+const sharedLimiter = new TokenBucketRateLimiter(AI_RATE_LIMIT);
 
 async function resolveDeps(): Promise<ParseImageDeps> {
   const { auth, data, ai } = await createContainer();

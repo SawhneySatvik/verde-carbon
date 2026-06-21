@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FOCUS_RING } from "@/app/_lib/classNames";
 
 /**
  * Field + Input — form primitives.
@@ -35,8 +36,7 @@ export const inputClass = (invalid?: boolean) =>
     invalid
       ? "border-danger"
       : "border-border-strong hover:border-border-interactive",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-    "focus-visible:ring-offset-2 focus-visible:ring-offset-[--ring-offset]",
+    FOCUS_RING,
     invalid ? "focus-visible:ring-danger" : "",
     "disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-text-disabled",
     "read-only:bg-surface-sunken",
